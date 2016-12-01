@@ -2370,7 +2370,7 @@ var abgeordnete =
         "Geburtsort": "Bassum",
         "Beruf": "Geschäftsführer",
         "Geburtsbundesland": "Niedersachsen",
-        "Reihe": "2",
+        "Reihe": "3",
         "Sitz": "48"
     },
     {
