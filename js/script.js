@@ -99,6 +99,7 @@ var partyColors = {
   "DIE LINKE": "left",
   "CDU": "cdu",
   "SPD": "spd",
+  "FDP": "fdp",
   "BÜ'90/GRÜNE": "green",
   "fraktionslos": "noparty"
 
@@ -174,7 +175,7 @@ function searchMap(){
   resetFilters();
 
   // the name in the search field
-  var searchedName = $("#abgs").val()
+  var searchedName = $("#searchbar").val().toLowerCase()
 
   // get a list of deputees matching the selected criteria
   var filteredAbgeordnete = $.grep(cleanabgeordnete, function(e) {
@@ -306,10 +307,13 @@ slider.noUiSlider.on('update', function(values){
 //professions
 $(".filter").append("<div class='search'><h1>Suche</h1></div>");
   $(".search").append(
-    '<div class="ui-widget"><br>' +
-    '<input id="abgs"><br>' +
-    '</div>'
-  );
+    '<div class="searchroom"></div>');
+  $(".searchroom").append(
+      '<div class="ui-widget">' +
+      '<input id="searchbar">' +
+      '</div>'+
+      '<i class="fa fa-search" aria-hidden="true"></i>'
+    );
 
 
 $( function() {
@@ -317,14 +321,14 @@ $( function() {
    for (var i = 0; i < cleanabgeordnete.length; i++){
      abgeordnete.push(cleanabgeordnete[i]["Vorname"] + " " + cleanabgeordnete[i]["Nachname"])
    }
-   $( "#abgs" ).autocomplete({
-     source: abgeordnete,
-     search: function() {
-       searchMap()
-   }
+   $( "#searchbar" ).autocomplete({
+     source: abgeordnete
    });
  } );
 
+$( ".fa" ).click(function(){
+  searchMap()
+})
 
 // draws a map of all cleanabgeordnete
 function drawMap(cleanabgeordnete){
