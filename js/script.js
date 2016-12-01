@@ -185,19 +185,15 @@ function searchMap(){
 
   // get a list of deputees matching the selected criteria
   var filteredAbgeordnete = $.grep(cleanabgeordnete, function(e) {
-    if(searchedName == "gangbang"){
-      radius = 150;
-      // delete the old map
-      map.eachLayer(function (layer) {
-        map.removeLayer(layer);
-      });
-
-      // draw a new one
-      drawMap(cleanabgeordnete);
-    }
     return (e["Vorname"].indexOf(searchedName) != -1) || (e["Nachname"].indexOf(searchedName) != -1) || ((e["Vorname"] + " " +  e["Nachname"]).indexOf(searchedName) != -1)
   })
+  
+  map.eachLayer(function (layer) {
+    map.removeLayer(layer);
+  });
 
+  // draw a new one
+  drawMap(cleanabgeordnete);
 
 
 }
