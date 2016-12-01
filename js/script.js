@@ -112,7 +112,7 @@ function showInfoCard(row, seat){
 }
 
 //apply filters to map and drae a new one based on input filter criteria
-function filterMap(){
+function filterMap(agevalues){
 
   // get all the parties that are checked
   var desiredParties = $(".parties").find("input").filter(":checked")
@@ -123,8 +123,49 @@ function filterMap(){
     desiredPartiesNames.push($(this).attr("name"))
   })
 
+
+
   // get a list of deputees matching the selected criteria
-  var filteredAbgeordnete = $.grep(cleanabgeordnete, function(e) { return desiredPartiesNames.indexOf(e["Partei"]) !== -1})
+  var filteredAbgeordnete = $.grep(cleanabgeordnete, function(e) {
+    return (parseInt(e["Alter*"]) <= agevalues[1]) && (parseInt(e["Alter*"]) >= agevalues[0])  && desiredPartiesNames.indexOf(e["Partei"]) != -1;
+  })
+
+  // delete the old map
+  map.eachLayer(function (layer) {
+    map.removeLayer(layer);
+  });
+
+  // draw a new one
+  drawMap(filteredAbgeordnete);
+}
+
+function resetFilters(){
+  //reset age-slider ranges
+  slider.noUiSlider.set([minAge, maxAge])
+
+  // check all checkboxes for Fraktionen
+  $(".parties").find("input").each(function(){
+    $(this).prop("checked", true);
+  })
+
+
+  // filterMap
+
+
+}
+
+function searchMap(){
+
+  //reset all filters when searching for a name
+  resetFilters();
+
+  // the name in the search field
+  var searchedName = $("#abgs").val()
+
+  // get a list of deputees matching the selected criteria
+  var filteredAbgeordnete = $.grep(cleanabgeordnete, function(e) {
+    return (e["Vorname"].indexOf(searchedName) != -1) || (e["Nachname"].indexOf(searchedName) != -1) || ((e["Vorname"] + " " +  e["Nachname"]).indexOf(searchedName) != -1)
+  })
 
   // delete the old map
   map.eachLayer(function (layer) {
@@ -146,18 +187,33 @@ var professions = [];
 // get list of all the relevant attributes that will be used in filters
 for(var i = 0; i < cleanabgeordnete.length; i++){
   // parties
-  if(parties.indexOf(cleanabgeordnete[i]["Partei"]) == -1){
-    parties.push(cleanabgeordnete[i]["Partei"]);
+  if(parties.indexOf(cleanabgeordnete[i]["Partei"].replace(/'/g, "&#039;")) == -1){
+    parties.push(cleanabgeordnete[i]["Partei"].replace(/'/g, "&#039;"));
   }
   // ages
-  if(ages.indexOf(cleanabgeordnete[i]["Alter"]) == -1){
-    ages.push(cleanabgeordnete[i]["Alter"]);
+  if(ages.indexOf(cleanabgeordnete[i]["Alter*"]) == -1){
+    ages.push(parseInt(cleanabgeordnete[i]["Alter*"]));
   }
   // professions
   if(professions.indexOf(cleanabgeordnete[i]["Beruf"]) == -1){
     professions.push(cleanabgeordnete[i]["Beruf"]);
   }
 }
+
+// generates a map
+var map = L.map('mapid', {
+    crs: L.CRS.Simple,
+    minZoom: 0,
+    maxZoom: 0
+});
+
+
+var bounds = [[1000 ,0], [1000,500]];
+  //var image = L.imageOverlay('assets/test.png', bounds).addTo(map);
+
+map.fitBounds(bounds);
+drawMap(cleanabgeordnete);
+
 
 // create html for filter elements
 // parties
@@ -168,15 +224,20 @@ for(var i = 0; i < parties.length; i++){
   );
 }
 
+$(".parties").find("input").prop("checked", true);
+
+
 $(".parties").find("input").each(function(){
   $(this).change(function(){
-  filterMap()
+  filterMap([0, 100])
   })
 })
 
 //ages
-var minAge = 0;
+var minAge = 100;
 var maxAge = 0;
+
+
 
 for(var i = 0; i < ages.length; i++){
   minAge = Math.min(minAge, ages[i])
@@ -188,27 +249,49 @@ $(".ages").append(
 "<div id='age-slider'></div>"
 );
 
-$( function() {
-   $( "#age-slider" ).slider({
-     range: true,
-     min: minAge,
-     max: maxAge,
-     values: [ 75, 300 ],
-     slide: function( event, ui ) {
-       $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
-     }
-   });
-   $( "#amount" ).val( "$" + $( "#age-slider" ).slider( "values", 0 ) +
-     " - $" + $( "#age-slider" ).slider( "values", 1 ) );
- } );
+var slider = document.getElementById('age-slider');
+
+noUiSlider.create(slider, {
+	start: [minAge, maxAge],
+  tooltips: true,
+	connect: true,
+	range: {
+		'min': minAge,
+		'max': maxAge
+	},
+  format: wNumb({
+		decimals: 0
+	}),
+});
+
+slider.noUiSlider.on('update', function(values){
+  filterMap(values);
+})
+
+
 
 //professions
-$(".filter").append("<div class='professions'><h1>Beruf</h1></div>");
-for(var i = 0; i < professions.length; i++){
-  $(".professions").append(
-    " <input type='checkbox' name='profession' value=''> " + professions[i] + "<br>"
+$(".filter").append("<div class='search'><h1>Suche</h1></div>");
+  $(".search").append(
+    '<div class="ui-widget"><br>' +
+    '<input id="abgs"><br>' +
+    '</div>'
   );
-}
+
+
+$( function() {
+   var abgeordnete = [];
+   for (var i = 0; i < cleanabgeordnete.length; i++){
+     abgeordnete.push(cleanabgeordnete[i]["Vorname"] + " " + cleanabgeordnete[i]["Nachname"])
+   }
+   $( "#abgs" ).autocomplete({
+     source: abgeordnete,
+     change: function() {
+       searchMap()
+   }
+   });
+ } );
+
 
 // draws a map of all cleanabgeordnete
 function drawMap(cleanabgeordnete){
@@ -239,8 +322,13 @@ function drawMap(cleanabgeordnete){
 
   }
 
-    $(marker._icon).addClass('face');
     $(".leaflet-marker-icon").addClass("face")
+
+    var color = partyColors[cleanabgeordnete[i]["Partei"]]
+    console.log(color)
+    $(".leaflet-marker-icon").addClass(color)
+
+
     marker.bindPopup(cleanabgeordnete[i]["Vorname"] + " " + cleanabgeordnete[i]["Nachname"]);
     marker.on('mouseover', function (e) {
       this.openPopup();
@@ -256,17 +344,3 @@ function drawMap(cleanabgeordnete){
 
   }
 }
-
-// generates a map
-var map = L.map('mapid', {
-    crs: L.CRS.Simple,
-    minZoom: 0,
-    maxZoom: 0
-});
-
-
-var bounds = [[1000 ,0], [1000,500]];
-  //var image = L.imageOverlay('assets/test.png', bounds).addTo(map);
-
-map.fitBounds(bounds);
-drawMap(cleanabgeordnete);
