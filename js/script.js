@@ -122,7 +122,7 @@ function showInfoCard(row, seat){
 }
 
 //apply filters to map and drae a new one based on input filter criteria
-function filterMap(){
+function filterMap(agevalues){
 
   // get all the parties that are checked
   var desiredParties = $(".parties").find("input").filter(":checked")
@@ -133,8 +133,49 @@ function filterMap(){
     desiredPartiesNames.push($(this).attr("name"))
   })
 
+
+
   // get a list of deputees matching the selected criteria
-  var filteredAbgeordnete = $.grep(cleanabgeordnete, function(e) { return desiredPartiesNames.indexOf(e["Partei"]) !== -1})
+  var filteredAbgeordnete = $.grep(cleanabgeordnete, function(e) {
+    return (parseInt(e["Alter*"]) <= agevalues[1]) && (parseInt(e["Alter*"]) >= agevalues[0])  && desiredPartiesNames.indexOf(e["Partei"]) != -1;
+  })
+
+  // delete the old map
+  map.eachLayer(function (layer) {
+    map.removeLayer(layer);
+  });
+
+  // draw a new one
+  drawMap(filteredAbgeordnete);
+}
+
+function resetFilters(){
+  //reset age-slider ranges
+  slider.noUiSlider.set([minAge, maxAge])
+
+  // check all checkboxes for Fraktionen
+  $(".parties").find("input").each(function(){
+    $(this).prop("checked", true);
+  })
+
+
+  // filterMap
+
+
+}
+
+function searchMap(){
+
+  //reset all filters when searching for a name
+  resetFilters();
+
+  // the name in the search field
+  var searchedName = $("#abgs").val()
+
+  // get a list of deputees matching the selected criteria
+  var filteredAbgeordnete = $.grep(cleanabgeordnete, function(e) {
+    return (e["Vorname"].indexOf(searchedName) != -1) || (e["Nachname"].indexOf(searchedName) != -1) || ((e["Vorname"] + " " +  e["Nachname"]).indexOf(searchedName) != -1)
+  })
 
   // delete the old map
   map.eachLayer(function (layer) {
@@ -156,116 +197,17 @@ var professions = [];
 // get list of all the relevant attributes that will be used in filters
 for(var i = 0; i < cleanabgeordnete.length; i++){
   // parties
-  if(parties.indexOf(cleanabgeordnete[i]["Partei"]) == -1){
-    parties.push(cleanabgeordnete[i]["Partei"]);
+  if(parties.indexOf(cleanabgeordnete[i]["Partei"].replace(/'/g, "&#039;")) == -1){
+    parties.push(cleanabgeordnete[i]["Partei"].replace(/'/g, "&#039;"));
   }
   // ages
-  if(ages.indexOf(cleanabgeordnete[i]["Alter"]) == -1){
-    ages.push(cleanabgeordnete[i]["Alter"]);
+  if(ages.indexOf(cleanabgeordnete[i]["Alter*"]) == -1){
+    ages.push(parseInt(cleanabgeordnete[i]["Alter*"]));
   }
   // professions
   if(professions.indexOf(cleanabgeordnete[i]["Beruf"]) == -1){
     professions.push(cleanabgeordnete[i]["Beruf"]);
   }
-}
-
-// create html for filter elements
-// parties
-$(".filter").append("<div class='parties'><h1>Fraktion</h1></div>");
-for(var i = 0; i < parties.length; i++){
-  $(".parties").append(
-    " <input type='checkbox' name='" + parties[i] + "' value=''> " + parties[i] + "<br>"
-  );
-}
-
-$(".parties").find("input").each(function(){
-  $(this).change(function(){
-  filterMap()
-  })
-})
-
-//ages
-var minAge = 0;
-var maxAge = 0;
-
-for(var i = 0; i < ages.length; i++){
-  minAge = Math.min(minAge, ages[i])
-  maxAge = Math.max(maxAge, ages[i])
-}
-
-$(".filter").append("<div class='ages'><h1>Alter</h1></div>");
-$(".ages").append(
-"<div id='age-slider'></div>"
-);
-
-$( function() {
-   $( "#age-slider" ).slider({
-     range: true,
-     min: minAge,
-     max: maxAge,
-     values: [ 75, 300 ],
-     slide: function( event, ui ) {
-       $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
-     }
-   });
-   $( "#amount" ).val( "$" + $( "#age-slider" ).slider( "values", 0 ) +
-     " - $" + $( "#age-slider" ).slider( "values", 1 ) );
- } );
-
-//professions
-$(".filter").append("<div class='professions'><h1>Beruf</h1></div>");
-for(var i = 0; i < professions.length; i++){
-  $(".professions").append(
-    " <input type='checkbox' name='profession' value=''> " + professions[i] + "<br>"
-  );
-}
-
-// draws a map of all cleanabgeordnete
-function drawMap(cleanabgeordnete){
-	map.removeLayer(markers);
-	markers = new L.FeatureGroup();
-
-  for (var i = 0; i < cleanabgeordnete.length; i++) {
-	var faceimage = PFAD;
-	faceimage += (showFace) 
-	? "assets/newportraits/" + cleanabgeordnete[i]["Vorname"].toLowerCase() + "-" + cleanabgeordnete[i]["Nachname"].toLowerCase() + ".png" 
-	: "assets/transparent.png";
-
-    var face = L.icon({
-
-      iconUrl: faceimage,
-
-      iconSize:     [40, 40], // size of the icon
-      iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-      popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-  });
-
-
-    var sol = L.latLng([ y(cleanabgeordnete[i]), x(cleanabgeordnete[i]) ]);
-    marker = L.marker(sol, {icon: face, riseOnHover: true, row: cleanabgeordnete[i]["Reihe"], seat: cleanabgeordnete[i]["Sitz"]})
-    marker.addTo(markers).on('click', onClick);
-
-    function onClick(e) {
-      showInfoCard(this.options.row, this.options.seat)
-
-  }
-
-    $(marker._icon).addClass('face');
-    $(".leaflet-marker-icon").addClass("face")
-    marker.bindPopup(cleanabgeordnete[i]["Vorname"] + " " + cleanabgeordnete[i]["Nachname"]);
-    marker.on('mouseover', function (e) {
-      this.openPopup();
-    });
-    marker.on('mouseout', function (e) {
-      this.closePopup();
-    });
-    
-  }
-  //map.setView(L.latLng([ 250, 500]));
-	
-    map.addLayer(markers);
-	
-    //map.panTo()
 }
 
 // generates a map
@@ -300,3 +242,137 @@ function fitView() {
 $(window).on('resize', function () {
 	fitView();
 });
+
+
+// create html for filter elements
+// parties
+$(".filter").append("<div class='parties'><h1>Fraktion</h1></div>");
+for(var i = 0; i < parties.length; i++){
+  $(".parties").append(
+    " <input type='checkbox' name='" + parties[i] + "' value=''> " + parties[i] + "<br>"
+  );
+}
+
+$(".parties").find("input").prop("checked", true);
+
+
+$(".parties").find("input").each(function(){
+  $(this).change(function(){
+  filterMap([0, 100])
+  })
+})
+
+//ages
+var minAge = 100;
+var maxAge = 0;
+
+
+
+for(var i = 0; i < ages.length; i++){
+  minAge = Math.min(minAge, ages[i])
+  maxAge = Math.max(maxAge, ages[i])
+}
+
+$(".filter").append("<div class='ages'><h1>Alter</h1></div>");
+$(".ages").append(
+"<div id='age-slider'></div>"
+);
+
+var slider = document.getElementById('age-slider');
+
+noUiSlider.create(slider, {
+	start: [minAge, maxAge],
+  tooltips: true,
+	connect: true,
+	range: {
+		'min': minAge,
+		'max': maxAge
+	},
+  format: wNumb({
+		decimals: 0
+	}),
+});
+
+slider.noUiSlider.on('update', function(values){
+  filterMap(values);
+})
+
+
+
+//professions
+$(".filter").append("<div class='search'><h1>Suche</h1></div>");
+  $(".search").append(
+    '<div class="ui-widget"><br>' +
+    '<input id="abgs"><br>' +
+    '</div>'
+  );
+
+
+$( function() {
+   var abgeordnete = [];
+   for (var i = 0; i < cleanabgeordnete.length; i++){
+     abgeordnete.push(cleanabgeordnete[i]["Vorname"] + " " + cleanabgeordnete[i]["Nachname"])
+   }
+   $( "#abgs" ).autocomplete({
+     source: abgeordnete,
+     change: function() {
+       searchMap()
+   }
+   });
+ } );
+
+
+// draws a map of all cleanabgeordnete
+function drawMap(cleanabgeordnete){
+	map.removeLayer(markers);
+	markers = new L.FeatureGroup();
+
+  for (var i = 0; i < cleanabgeordnete.length; i++) {
+	var faceimage = PFAD;
+	faceimage += (showFace) 
+	? "assets/newportraits/" + cleanabgeordnete[i]["Vorname"].toLowerCase() + "-" + cleanabgeordnete[i]["Nachname"].toLowerCase() + ".png" 
+	: "assets/transparent.png";
+
+    var face = L.icon({
+
+      iconUrl: faceimage,
+
+      iconSize:     [40, 40], // size of the icon
+      iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+      popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+  });
+
+
+    var sol = L.latLng([ y(cleanabgeordnete[i]), x(cleanabgeordnete[i]) ]);
+    marker = L.marker(sol, {icon: face, riseOnHover: true, row: cleanabgeordnete[i]["Reihe"], seat: cleanabgeordnete[i]["Sitz"]})
+    marker.addTo(markers).on('click', onClick);
+
+    function onClick(e) {
+      showInfoCard(this.options.row, this.options.seat)
+
+  }
+
+    $(".leaflet-marker-icon").addClass("face")
+
+    var color = partyColors[cleanabgeordnete[i]["Partei"]]
+    console.log(color)
+    $(".leaflet-marker-icon").addClass(color)
+
+
+    marker.bindPopup(cleanabgeordnete[i]["Vorname"] + " " + cleanabgeordnete[i]["Nachname"]);
+    marker.on('mouseover', function (e) {
+      this.openPopup();
+    });
+    marker.on('mouseout', function (e) {
+      this.closePopup();
+    });
+    
+  }
+  //map.setView(L.latLng([ 250, 500]));
+	
+    map.addLayer(markers);
+	
+    //map.panTo()
+}
+
+
