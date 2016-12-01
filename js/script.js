@@ -1,5 +1,4 @@
 
-var abgeordnete = []
 
 // only for current deputees
 var cleanabgeordnete = []
@@ -14,15 +13,7 @@ var rows = [
   [6, 209]
 ]
 
-// get the json data and push into array of abgeordnete
-$.ajax({
-  url: './Data/data.json',
-  async: false,
-  dataType: 'json',
-  success: function (json) {
-    abgeordnete = json;
-  }
-});
+
 
 // remove abgeordnete from older Houses and adjust their names to not include umlauts
 for(var i = 0; i < abgeordnete.length; i++){
@@ -210,7 +201,7 @@ $( function() {
    $( "#amount" ).val( "$" + $( "#age-slider" ).slider( "values", 0 ) +
      " - $" + $( "#age-slider" ).slider( "values", 1 ) );
  } );
- 
+
 //professions
 $(".filter").append("<div class='professions'><h1>Beruf</h1></div>");
 for(var i = 0; i < professions.length; i++){
@@ -223,36 +214,12 @@ for(var i = 0; i < professions.length; i++){
 function drawMap(cleanabgeordnete){
 
   for (var i = 0; i < cleanabgeordnete.length; i++) {
-    // get the correct image based on how it is named (first-last or last-fist)
-    var faceimg = "";
-    $.ajax({
-        url:"assets/newportraits/"  +  cleanabgeordnete[i]["Vorname"].toLowerCase() + "-" + cleanabgeordnete[i]["Nachname"].toLowerCase()+ ".png",
-        type:'HEAD',
-        async: false,
-        success: function()
-        {
-            getImage(cleanabgeordnete[i], "normal")
-        },
-        error: function()
-        {
-          getImage(cleanabgeordnete[i], "reverse")
-        }
-    });
 
-      function getImage(abg, dir){
-        if(dir != "reverse"){
-          faceimg = "assets/newportraits/"  +  abg["Vorname"].toLowerCase() + "-" + abg["Nachname"].toLowerCase()+ ".png"
-        }
-        else{
-            faceimg = "assets/newportraits/"  +  abg["Nachname"].toLowerCase() + "-" + abg["Vorname"].toLowerCase()+ ".png"
-        }
-
-      }
-
+    var faceimage = "assets/newportraits/" + cleanabgeordnete[i]["Vorname"].toLowerCase() + "-" + cleanabgeordnete[i]["Nachname"].toLowerCase() + ".png";
 
     var face = L.icon({
 
-      iconUrl: "assets/newportraits/frank-hansel.png",
+      iconUrl: faceimage,
 
       iconSize:     [40, 40], // size of the icon
       iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
