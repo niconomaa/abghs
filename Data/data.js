@@ -1,4 +1,4 @@
-var abgeordnete = 
+var abgeordnete =
 
 [
     {
@@ -3560,7 +3560,7 @@ var abgeordnete =
         "Entfernung Geburtsort zum Abgeordnetenhaus": "",
         "Partei": "SPD",
         "Geburtsland": "Deutschland",
-        "Nachname": "Çağlar",
+        "Nachname": "Caglar",
         "Geburtsort": "Berlin",
         "Beruf": "Diplom-Volkswirtin",
         "Geburtsbundesland": "Berlin",
@@ -4169,7 +4169,7 @@ var abgeordnete =
         "Entfernung Geburtsort zum Abgeordnetenhaus": "",
         "Partei": "SPD",
         "Geburtsland": "Deutschland",
-        "Nachname": "Schneider, Torsten",
+        "Nachname": "Schneider",
         "Geburtsort": "Lutherstadt Wittenberg",
         "Beruf": "Parlamentarischer Geschäftsführer",
         "Geburtsbundesland": "Sachsen-Anhalt",
