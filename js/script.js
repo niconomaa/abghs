@@ -1,9 +1,16 @@
 function extendBounds(bounds, padding) {
-	console.log(bounds);
 	corner1 = bounds.getSouthWest();
 	corner2 = bounds.getNorthEast();
 	return L.latLngBounds(L.latLng(corner1.lat - padding[2], corner1.lng - padding[3]),
 	L.latLng(corner2.lat + padding[0], corner2.lng + padding[1]));
+}
+
+function fitView() {
+	bounds = extendBounds(markers.getBounds(), [60, 60, 60, 60]);
+	map.fitBounds(bounds);
+	var prev = showFace;
+	showFace = ($('#mapid').width() > 600);
+	if(prev != showFace) { drawMap(cleanabgeordnete); }
 }
 
 PFAD = "";
@@ -221,8 +228,12 @@ var map = L.map('mapid', {
 	center: [315,202],
 	zoomControl: false,
 	scrollWheelZoom: false,
+	doubleClickZoom: false,
+	touchZoom: false,
+	trackResize: false,
+	boxZoom: false,
 	zoom: 0,
-	zoomSnap: 0.05,
+	zoomSnap: 0.01,
 	minZoom: -5,
 	dragging: false
 });
@@ -234,14 +245,6 @@ var bounds = [[1000 ,0], [1000,500]];
 
 drawMap(cleanabgeordnete);
 fitView();
-
-function fitView() {
-	bounds = extendBounds(markers.getBounds(), [120, 50, -60, 50]);
-	map.fitBounds(bounds);
-	var prev = showFace;
-	showFace = ($('#mapid').width() > 600);
-	if(prev != showFace) { drawMap(cleanabgeordnete); }
-}
 
 
 $(window).on('resize', function () {
@@ -346,8 +349,8 @@ function drawMap(cleanabgeordnete){
       iconUrl: faceimage,
 	  className: color + " face",
       iconSize:     [40, 40], // size of the icon
-      iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-      popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+      iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location
+      popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
   });
 
     var sol = L.latLng([ y(cleanabgeordnete[i]), x(cleanabgeordnete[i]) ]);
