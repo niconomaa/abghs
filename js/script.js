@@ -230,7 +230,6 @@ var map = L.map('mapid', {
 	scrollWheelZoom: false,
 	doubleClickZoom: false,
 	touchZoom: false,
-	trackResize: false,
 	boxZoom: false,
 	zoom: 0,
 	zoomSnap: 0.01,
