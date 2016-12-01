@@ -13,12 +13,11 @@ function fitView() {
 	if(prev != showFace) { drawMap(cleanabgeordnete); }
 }
 
-PFAD = "";
-
 // only for current deputees
 var cleanabgeordnete = [];
 var markers = new L.FeatureGroup();;
 var showFace = null;
+PFAD = "http://rbb.dogl.de/abghs/";
 
 //row numbers and their max seat numbers
 var rows = [
