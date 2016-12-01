@@ -1,7 +1,17 @@
+function extendBounds(bounds, padding) {
+	console.log(bounds);
+	corner1 = bounds.getSouthWest();
+	corner2 = bounds.getNorthEast();
+	return L.latLngBounds(L.latLng(corner1.lat - padding[2], corner1.lng - padding[3]), 
+	L.latLng(corner2.lat + padding[0], corner2.lng + padding[1]));
+}
 
+PFAD = "";
 
 // only for current deputees
-var cleanabgeordnete = []
+var cleanabgeordnete = [];
+var markers = new L.FeatureGroup();;
+var showFace = null;
 
 //row numbers and their max seat numbers
 var rows = [
@@ -212,10 +222,14 @@ for(var i = 0; i < professions.length; i++){
 
 // draws a map of all cleanabgeordnete
 function drawMap(cleanabgeordnete){
+	map.removeLayer(markers);
+	markers = new L.FeatureGroup();
 
   for (var i = 0; i < cleanabgeordnete.length; i++) {
-
-    var faceimage = "assets/newportraits/" + cleanabgeordnete[i]["Vorname"].toLowerCase() + "-" + cleanabgeordnete[i]["Nachname"].toLowerCase() + ".png";
+	var faceimage = PFAD;
+	faceimage += (showFace) 
+	? "assets/newportraits/" + cleanabgeordnete[i]["Vorname"].toLowerCase() + "-" + cleanabgeordnete[i]["Nachname"].toLowerCase() + ".png" 
+	: "assets/transparent.png";
 
     var face = L.icon({
 
@@ -227,9 +241,6 @@ function drawMap(cleanabgeordnete){
   });
 
 
-    var markers = new L.FeatureGroup();
-
-    markers.clearLayers();
     var sol = L.latLng([ y(cleanabgeordnete[i]), x(cleanabgeordnete[i]) ]);
     marker = L.marker(sol, {icon: face, riseOnHover: true, row: cleanabgeordnete[i]["Reihe"], seat: cleanabgeordnete[i]["Sitz"]})
     marker.addTo(markers).on('click', onClick);
@@ -248,25 +259,44 @@ function drawMap(cleanabgeordnete){
     marker.on('mouseout', function (e) {
       this.closePopup();
     });
-    map.setView(L.latLng([ 250, 500]));
-
-    map.addLayer(markers);
-    map.panTo([315,502])
-
-
+    
   }
+  //map.setView(L.latLng([ 250, 500]));
+	
+    map.addLayer(markers);
+	
+    //map.panTo()
 }
 
 // generates a map
 var map = L.map('mapid', {
     crs: L.CRS.Simple,
-    minZoom: 0,
-    maxZoom: 0
+	center: [315,202],
+	zoomControl: false,
+	scrollWheelZoom: false,
+	zoom: 0,
+	zoomSnap: 0.05,
+	minZoom: -5,
+	dragging: false
 });
 
 
 var bounds = [[1000 ,0], [1000,500]];
   //var image = L.imageOverlay('assets/test.png', bounds).addTo(map);
 
-map.fitBounds(bounds);
+
 drawMap(cleanabgeordnete);
+fitView();
+
+function fitView() {
+	bounds = extendBounds(markers.getBounds(), [120, 50, -60, 50]);
+	map.fitBounds(bounds);
+	var prev = showFace;
+	showFace = ($('#mapid').width() > 600);
+	if(prev != showFace) { drawMap(cleanabgeordnete); }
+}
+
+
+$(window).on('resize', function () {
+	fitView();
+});

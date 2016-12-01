@@ -1,72 +1,86 @@
-#mapid {
-  width: 100%;
-  height: 600px;
-
+#abghs #box {
+	position: relative;
+	width: 100%;
+	
 }
 
-.face{
+#abghs #box:before{
+	content: "";
+	display: block;
+	padding-top: 50%; 	/* initial ratio of 1:1*/
+}
+
+#abghs #mapid {
+
+	position:  absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+#abghs .face{
   border-radius: 50%;
 }
 
-.leaflet-container {
+#abghs .leaflet-container {
     background-color:rgba(255,0,0,0.0) !important;
 }
 
-.infoCard{
+#abghs .infoCard{
   width: 100%;
   height: 200px;
-  display flex;
+  display: flex;
   justify-content: center;
-  background:
 }
 
-.infoCard *{
+#abghs .infoCard *{
   text-align: center;
   margin: 0px;
   padding: 0px;
 }
 
-.filter{
+#abghs .filter{
   width: 100%;
   display: flex;
   justify-content: flex-start;;
   height: 300px;
 }
 
-.parties,
-.ages,
-.professions{
+#abghs .parties,
+#abghs .ages,
+#abghs .professions{
   padding: 0 40px;
   overflow-y: scroll;
   font-size: 1.5em;
 }
 
-.entry{
+#abghs .entry{
   font-size: 0.8em;
   color: darkgrey;
   font-weight: 300;
 }
 
-.spd{
+#abghs .spd{
   background: rgba(228, 6, 19, 0.6);
 }
 
-.cdu{
+#abghs .cdu{
   background: rgba(0, 0, 0, 0.6);
 }
 
-.afd{
+#abghs .afd{
   background: rgba(1, 177, 236, 0.6);
 }
 
-.green{
+#abghs .green{
   background: rgba(80, 174, 49, 0.6);
 }
 
-.left{
+#abghs .left{
   background: rgba(149, 27, 128, 0.6);
 }
 
-.noparty{
+#abghs .noparty{
   background: rgba(255,255,255, 0.6);
 }
