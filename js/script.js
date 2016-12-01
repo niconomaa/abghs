@@ -2,7 +2,7 @@ function extendBounds(bounds, padding) {
 	console.log(bounds);
 	corner1 = bounds.getSouthWest();
 	corner2 = bounds.getNorthEast();
-	return L.latLngBounds(L.latLng(corner1.lat - padding[2], corner1.lng - padding[3]), 
+	return L.latLngBounds(L.latLng(corner1.lat - padding[2], corner1.lng - padding[3]),
 	L.latLng(corner2.lat + padding[0], corner2.lng + padding[1]));
 }
 
@@ -109,6 +109,9 @@ function showInfoCard(row, seat){
     var abgeordneter = $.grep(cleanabgeordnete, function(e) { return e["Reihe"] == row && e["Sitz"] == seat })[0];
     $(".infoCard").empty()
     $(".infoCard").append(
+      "<img class='profilepic' src='assets/newportraits/" + abgeordneter["Vorname"].toLowerCase() + "-" + abgeordneter["Nachname"].toLowerCase() + ".png'/>");
+    $(".infoCard").append("<div class='info'></div>");
+    $(".info").append(
       "<h3>" + abgeordneter["Vorname"] + " " + abgeordneter["Nachname"] + ", " + abgeordneter["Alter*"] + "</h3><br>" +
       "<h2>" + abgeordneter["Partei"] + "<span class='entry'>, im Abgeordnetenhaus seit " + abgeordneter["erster Einzug ins AGH**"] + "</span></h2><br>" +
       "<h4>" + abgeordneter["Beruf"] + " aus " + abgeordneter["Geburtsbundesland"] + "</h4><br>"
@@ -120,6 +123,7 @@ function showInfoCard(row, seat){
     $(".infoCard").toggleClass(partyColors[abgeordneter["Partei"]])
   }
 }
+
 
 //apply filters to map and drae a new one based on input filter criteria
 function filterMap(agevalues){
@@ -315,7 +319,7 @@ $( function() {
    }
    $( "#abgs" ).autocomplete({
      source: abgeordnete,
-     change: function() {
+     search: function() {
        searchMap()
    }
    });
@@ -329,8 +333,8 @@ function drawMap(cleanabgeordnete){
 
   for (var i = 0; i < cleanabgeordnete.length; i++) {
 	var faceimage = PFAD;
-	faceimage += (showFace) 
-	? "assets/newportraits/" + cleanabgeordnete[i]["Vorname"].toLowerCase() + "-" + cleanabgeordnete[i]["Nachname"].toLowerCase() + ".png" 
+	faceimage += (showFace)
+	? "assets/newportraits/" + cleanabgeordnete[i]["Vorname"].toLowerCase() + "-" + cleanabgeordnete[i]["Nachname"].toLowerCase() + ".png"
 	: "assets/transparent.png";
 
     var face = L.icon({
@@ -352,7 +356,6 @@ function drawMap(cleanabgeordnete){
 
   }
 
-    $(".leaflet-marker-icon").addClass("face")
 
     var color = partyColors[cleanabgeordnete[i]["Partei"]]
     console.log(color)
@@ -366,13 +369,11 @@ function drawMap(cleanabgeordnete){
     marker.on('mouseout', function (e) {
       this.closePopup();
     });
-    
+
   }
   //map.setView(L.latLng([ 250, 500]));
-	
+
     map.addLayer(markers);
-	
+
     //map.panTo()
 }
-
-

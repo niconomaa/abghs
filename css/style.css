@@ -1,7 +1,6 @@
 #abghs #box {
 	position: relative;
 	width: 100%;
-	
 }
 
 #abghs #box:before{
@@ -11,7 +10,6 @@
 }
 
 #abghs #mapid {
-
 	position:  absolute;
 	top: 0;
 	left: 0;
@@ -29,34 +27,59 @@
 
 #abghs .infoCard{
   width: 100%;
-  height: 200px;
+  min-height: 300px;
+  padding: 50px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 #abghs .infoCard *{
   text-align: center;
   margin: 0px;
-  padding: 0px;
+  padding: 0 10px;
+}
+
+#abghs .infoCard .profilepic{
+  max-width:200px;
+  max-height:200px;
+  width: auto;
+  height: auto;
+  border-radius: 50%;
+  flex-shrink: 0;
+  padding-bottom: 20px;
+}
+
+#abghs .infoCard .info{
+  width: 70%;
 }
 
 #abghs .filter{
   width: 100%;
   display: flex;
-  justify-content: flex-start;;
+  justify-content: center;
+  flex-wrap: wrap;
   height: 300px;
 }
 
 #abghs .parties,
 #abghs .ages,
-#abghs .professions{
+#abghs .search{
   padding: 0 40px;
   overflow-y: scroll;
   font-size: 1.5em;
+  text-align: center;
+}
+
+#abghs .parties{
+  text-align: left;
 }
 
 .ages{
+  min-width: 200px;
   width: 40%;
+
 }
 
 .ages h1{
@@ -91,4 +114,9 @@
 
 #abghs .noparty{
   background: rgba(255,255,255, 0.6);
+}
+
+#abgs{
+  height: 50px;
+  font-size: 1.7em;
 }
