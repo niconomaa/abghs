@@ -332,47 +332,27 @@ function drawMap(cleanabgeordnete){
 	faceimage += (showFace) 
 	? "assets/newportraits/" + cleanabgeordnete[i]["Vorname"].toLowerCase() + "-" + cleanabgeordnete[i]["Nachname"].toLowerCase() + ".png" 
 	: "assets/transparent.png";
-
+	var color = partyColors[cleanabgeordnete[i]["Partei"]]
+	
     var face = L.icon({
-
       iconUrl: faceimage,
-
+	  className: color + " face",
       iconSize:     [40, 40], // size of the icon
       iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
       popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
   });
 
-
     var sol = L.latLng([ y(cleanabgeordnete[i]), x(cleanabgeordnete[i]) ]);
     marker = L.marker(sol, {icon: face, riseOnHover: true, row: cleanabgeordnete[i]["Reihe"], seat: cleanabgeordnete[i]["Sitz"]})
-    marker.addTo(markers).on('click', onClick);
-
-    function onClick(e) {
-      showInfoCard(this.options.row, this.options.seat)
-
-  }
-
-    $(".leaflet-marker-icon").addClass("face")
-
-    var color = partyColors[cleanabgeordnete[i]["Partei"]]
-    console.log(color)
-    $(".leaflet-marker-icon").addClass(color)
-
-
-    marker.bindPopup(cleanabgeordnete[i]["Vorname"] + " " + cleanabgeordnete[i]["Nachname"]);
-    marker.on('mouseover', function (e) {
-      this.openPopup();
-    });
-    marker.on('mouseout', function (e) {
-      this.closePopup();
-    });
     
+	// infocard
+	marker.addTo(markers).on('click', function (e) {
+      showInfoCard(this.options.row, this.options.seat)
+	});
+
+	// tooltip
+	var tool = L.tooltip({sticky: true}).setContent(cleanabgeordnete[i]["Vorname"] + " " + cleanabgeordnete[i]["Nachname"])
+	marker.bindTooltip(tool);
   }
-  //map.setView(L.latLng([ 250, 500]));
-	
-    map.addLayer(markers);
-	
-    //map.panTo()
+  map.addLayer(markers);
 }
-
-
