@@ -187,13 +187,13 @@ function searchMap(){
   var filteredAbgeordnete = $.grep(cleanabgeordnete, function(e) {
     return (e["Vorname"].indexOf(searchedName) != -1) || (e["Nachname"].indexOf(searchedName) != -1) || ((e["Vorname"] + " " +  e["Nachname"]).indexOf(searchedName) != -1)
   })
-  
+
   map.eachLayer(function (layer) {
     map.removeLayer(layer);
   });
 
   // draw a new one
-  drawMap(cleanabgeordnete);
+  drawMap(filteredAbgeordnete);
 
 
 }
