@@ -15,6 +15,7 @@
 	left: 0;
 	bottom: 0;
 	right: 0;
+	z-index: 10;
 }
 
 #abghs .face{
@@ -60,14 +61,13 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  height: 300px;
 }
 
 #abghs .parties,
 #abghs .ages,
 #abghs .search{
   padding: 10px 40px;
-  overflow-y: scroll;
+  overflow-y: hidden;
   font-size: 1.5em;
   text-align: center;
 }

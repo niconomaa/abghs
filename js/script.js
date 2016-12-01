@@ -116,7 +116,7 @@ function showInfoCard(row, seat){
     var abgeordneter = $.grep(cleanabgeordnete, function(e) { return e["Reihe"] == row && e["Sitz"] == seat })[0];
     $(".infoCard").empty()
     $(".infoCard").append(
-      "<img class='profilepic' src='assets/newportraits/" + abgeordneter["Vorname"].toLowerCase() + "-" + abgeordneter["Nachname"].toLowerCase() + ".png'/>");
+      "<img class='profilepic' src='" + PFAD + "assets/newportraits/" + abgeordneter["Vorname"].toLowerCase() + "-" + abgeordneter["Nachname"].toLowerCase() + ".png'/>");
     $(".infoCard").append("<div class='info'></div>");
     $(".info").append(
       "<h3>" + abgeordneter["Vorname"] + " " + abgeordneter["Nachname"] + ", " + abgeordneter["Alter*"] + "</h3><br>" +
